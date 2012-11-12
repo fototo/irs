@@ -1,0 +1,121 @@
+{% load humanize %}<html><head><title>IRS Form 990 lookup</title>
+<!--nonprofit info comes from bulk.resource.org. Code for extracting them from index by Luke Rosiak (lukerosiak.info)-->
+<!-- jQuery -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.js"></script>
+
+	<!-- Demo stuff -->
+	<link class="ui-theme" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/cupertino/jquery-ui.css">
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="http://mottie.github.com/tablesorter/docs/css/jq.css">
+	<script src="http://mottie.github.com/tablesorter/docs/js/chili/jquery.chili-2.2.js"></script>
+	<script src="http://mottie.github.com/tablesorter/docs/js/chili/recipes.js"></script>
+	<script src="http://mottie.github.com/tablesorter/docs/js/docs.js"></script>
+
+	<!-- Tablesorter: required -->
+	<link rel="stylesheet" href="http://mottie.github.com/tablesorter/css/theme.blue.css">
+	<script src="http://mottie.github.com/tablesorter/js/jquery.tablesorter.js"></script>
+	<script src="http://mottie.github.com/tablesorter/js/jquery.tablesorter.widgets.js"></script>
+
+	<script>
+	$(function(){
+		$('.accordion').accordion({
+			autoHeight: false,
+			collapsible : true
+		});
+	});
+	</script>
+
+	<script id="js">$(function() {
+
+	// call the tablesorter plugin
+	$("table").tablesorter({
+		theme: 'blue',
+
+		// hidden filter input/selects will resize the columns, so try to minimize the change
+		widthFixed : true,
+
+		// initialize zebra striping and filter widgets
+		widgets: ["zebra", "filter"],
+
+		// headers: { 5: { sorter: false, filter: false } },
+
+		widgetOptions : {
+
+			// If there are child rows in the table (rows with class name from "cssChildRow" option)
+			// and this option is true and a match is found anywhere in the child row, then it will make that row
+			// visible; default is false
+			filter_childRows : false,
+
+			// if true, a filter will be added to the top of each table column;
+			// disabled by using -> headers: { 1: { filter: false } } OR add class="filter-false"
+			// if you set this to false, make sure you perform a search using the second method below
+			filter_columnFilters : true,
+
+			// css class applied to the table row containing the filters & the inputs within that row
+			filter_cssFilter : 'tablesorter-filter',
+
+			// add custom filter functions using this option
+			// see the filter widget custom demo for more specifics on how to use this option
+			filter_functions : null,
+
+			// if true, filters are collapsed initially, but can be revealed by hovering over the grey bar immediately
+			// below the header row. Additionally, tabbing through the document will open the filter row when an input gets focus
+			filter_hideFilters : false,
+
+			// Set this option to false to make the searches case sensitive
+			filter_ignoreCase : true,
+
+			// jQuery selector string of an element used to reset the filters
+			filter_reset : 'button.reset',
+
+			// Delay in milliseconds before the filter widget starts searching; This option prevents searching for
+			// every character while typing and should make searching large tables faster.
+			filter_searchDelay : 300,
+
+			// Set this option to true to use the filter to find text from the start of the column
+			// So typing in "a" will find "albert" but not "frank", both have a's; default is false
+			filter_startsWith : false,
+
+			// Filter using parsed content for ALL columns
+			// be careful on using this on date columns as the date is parsed and stored as time in seconds
+			filter_useParsedData : false
+
+		}
+
+	});
+
+});</script>
+
+
+</head>
+
+<body>
+
+Enter a nonprofit name in this box to search for 990s from <a href="http://bulk.resource.org">bulk.resource.org</a> -Luke Rosiak
+
+<form method="get">
+<input type="text" name="q" value="{{q}}" style="width:40em"/>
+<input type="submit"/>
+</form>
+
+
+     <table width="100%" class="normal" id="searchtable" border="0" cellspacing="4" cellpadding="0" style="display:none;">
+       <tr>
+         <td width="27%"><input name="search" type="text" id="search" style="display:none;" /></td>
+         <td width="73%"><div id="loader" style="display:none;"><img src="loader.gif" alt="Laoder" /></div></td>
+       </tr>
+     </table>
+
+
+<table id="table">
+<thead><tr><th>Type</th><th>Year</th><th>Name</th><th>Assets</th><th>Size</th></tr></thead>
+<tbody>
+{%for line in results%}
+<tr><td>{{line.doctype}}</td><td>{{line.year}}</td><td><a href="http://bulk.resource.org{{line.url}}">{{line.text}}</a></td><td>${{line.assetts|intcomma}}</td><td>{{line.size}}</td></tr>
+{%endfor%}
+</tbody>
+</table>
+
+<a href="https://github.com/lukerosiak/irs">Code on Github</a>
+
+</html></body>
